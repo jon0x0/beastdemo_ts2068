@@ -17,13 +17,21 @@ assert (r/f'build/{tag}_expanded.bin').read_bytes()==(r/f'build/{tag}.bin').read
 old=json.loads((r/'revisions/rev07/build/beast-art.json').read_text())
 new=json.loads((r/'build/beast-art.json').read_text())
 if m['revision']>=9:
-    assert (r/'build/beast-art.json').read_bytes()==(r/'revisions/rev08/build/beast-art.json').read_bytes()
+    baseline=json.loads((r/'revisions/rev08/build/beast-art.json').read_text())
+    assert new['bands']==baseline['bands']
+    if m['revision']<14:assert new['sprites']==baseline['sprites']
     for name in ['music-validation.json','fuse-music.json','fuse-cycle-long.json']:
         assert json.loads((r/'build'/name).read_text())['dck_sha256']==m['sha256']['dck']
 if m['revision']>=10:
     toggle=json.loads((r/'build/music-toggle-validation.json').read_text())
     assert toggle['dck_sha256']==m['sha256']['dck'] and toggle['toggleChanges']==4
-assert old['sprites']==new['sprites']
+if m['revision']>=14:
+    from align_runner import align_runner
+    baseline=json.loads((r/'revisions/rev10/build/beast-art.json').read_text())
+    assert new==align_runner(baseline),'Only lossless runner alignment may differ'
+    alignment=json.loads((r/'build/alignment-validation.json').read_text())
+    assert alignment['dck_sha256']==m['sha256']['dck']
+else:assert old['sprites']==new['sprites']
 for a,b in zip(old['bands'],new['bands']):
     if a['name'].startswith('cloud') or a['name']=='sky_gap':assert a==b,a['name']
 im=Image.open(r/f'build/{tag}.gif');duration=0

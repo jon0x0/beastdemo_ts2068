@@ -1,4 +1,4 @@
-# Beast Horizons revision 10 memory contract
+# Beast Horizons revision 14 memory contract
 
 | Physical DOCK chunk | Address | Contents / runtime mapping |
 |---|---|---|
@@ -30,13 +30,13 @@ It restores the main stack and HSR before returning. DECR never changes.
 | HOME range | Use |
 |---|---|
 | 4000-57FF | Nonlinear visible bitmap |
-| 5800-5DFF | Reserved bitmap staging; live columns 14-17 in rows 0-39 |
+| 5800-5DFF | Reserved bitmap staging; live columns 13-16 in rows 0-39 |
 | 5E00-5F00 | 257-byte IM2 table, filled with 5F |
 | 5F5F-5F61 | JP to resident interrupt handler |
 | 5F80-5FD0 | Mixed display/buffer circular copier |
 | 5FD1-5FD2 | Dummy patch slot for zero coarse scroll |
 | 6000-77FF | Nonlinear visible ECM attributes |
-| 7800-7DFF | Reserved attribute staging; live columns 14-17 in rows 0-39 |
+| 7800-7DFF | Reserved attribute staging; live columns 13-16 in rows 0-39 |
 | 7E00-7E3F | Renderer/music state and scratch |
 | 7E40-7EC9 | Ordinary circular-copy code |
 | Below 8000 | Main stack, separate from working state/code |
@@ -53,7 +53,7 @@ fraction 7E0C, clouds 7E10-14, grass base 7E16, source 7E20, character destinati
 sound-off flag 7E3B (zero means enabled), S-key held latch 7E3C.
 
 The ordinary copier patches jump low bytes at 7E41/7E87. The mixed copier writes
-14 bytes to display, four to the character buffer, then 14 to display. One LDI
+13 bytes to display, four to the character buffer, then 15 to display. One LDI
 is replaced by RST 08 / NOP to wrap the source. DOCK 0008 holds a JP to the ROM
 wrap helper, visible in F3/53/13. Setup restores the old LDI and patches the new
 slot before drawing; interrupts never invoke either copier. ROM is never modified.
@@ -83,3 +83,7 @@ shadow values. Driver writes keep the amplitude shadows current while muted;
 only hardware amplitude writes are forced to zero. Other registers, envelope
 retrigger writes, music phase and song position continue normally. Output wrapper
 preserves the original driver-visible registers and flags.
+
+Revision 14 moves the protected rectangle to X=104–135. Five blank columns
+precede the original sprite, and five wholly transparent trailing columns are
+removed. Every visible pixel moves exactly three screen pixels left.

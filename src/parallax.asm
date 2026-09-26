@@ -1,4 +1,4 @@
-; Beast Horizons rev10: one-pixel parallax plus interrupt-driven AY music.
+; Beast Horizons rev14: one-pixel parallax plus interrupt-driven AY music.
 org $8000
 db $02,$02,$08,$80,$ef,$01,0,0
 TICK equ $7e00
@@ -472,7 +472,7 @@ ld hl,(SOURCE)
 ldi
 ret
 mixed_image:
-rept 14
+rept 13
 ldi
 endm
 ld (MIXED_DISPLAY),de
@@ -485,7 +485,7 @@ inc de
 inc de
 inc de
 inc de
-rept 14
+rept 15
 ldi
 endm
 ret
@@ -509,7 +509,7 @@ ld a,(hl)
 ld (HSR),a
 out ($f4),a
 ex de,hl
-ld de,$580e
+ld de,$580d
 ld c,40
 ld a,(FRAME)
 and 1
@@ -532,7 +532,7 @@ and 1
 ret nz
 ; Full poses carry a prepared 4x40 attribute overlay after their bitmap masks.
 ; Background palettes are fixed in this strip, so no restore pass is needed.
-ld de,$780e
+ld de,$780d
 ld b,40
 runner_attribute_row:
 push bc

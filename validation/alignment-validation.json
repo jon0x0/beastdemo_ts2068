@@ -1,0 +1,12 @@
+{
+  "backgroundIdentical": true,
+  "visibleSpritePixelsPreserved": true,
+  "screenShiftPixels": -3,
+  "rightEdgeExposedPixelsAcrossSixPoses": {
+    "before": 808,
+    "after": 466
+  },
+  "reductionPercent": 42.33,
+  "scope": "Upper 32 sprite rows against rocks; geometric exposure, not a claim of zero clash",
+  "dck_sha256": "6ebe0879e2afcc132e78c6ebe2eed24a6f7a67cdcff209e180077e5131d80ddd"
+}

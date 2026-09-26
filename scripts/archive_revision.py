@@ -52,6 +52,11 @@ if rev>=9:
                  'fuse-music.json','fuse-music.txt','fuse-music.log',
                  'fuse-cycle-long.json','fuse-cycle-long.txt','fuse-cycle-long.log']
 if rev>=10:evidence += ['music-toggle-validation.json']
+if rev>=14:
+    evidence += ['alignment-validation.json','runner-alignment-comparison.png']
+    alignment=json.loads((root/'build/alignment-validation.json').read_text())
+    assert alignment['backgroundIdentical'] and alignment['visibleSpritePixelsPreserved']
+    assert alignment['dck_sha256']==manifest['sha256']['dck']
 for p in sorted((root/'build').iterdir()):
     keep=(p.name.startswith((tag,) if rev>=6 else (tag,'emulator',f'reference_{name}')) or p.name in evidence)
     if keep and p.is_file():shutil.copy2(p,target/'build'/p.name)

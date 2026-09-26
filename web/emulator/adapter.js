@@ -8,7 +8,7 @@ async function boot(){
   const canvas=document.getElementById('screen'),matrix=new Uint8Array(8),joystick=new Uint8Array(2);
   const kbd=keys.initKeyboard(document.getElementById('keyboard'),matrix);pads.initJoysticks(joystick);
   const machine=cpu.createMachine(matrix,joystick);
-  const [rom0,rom1,cart,vert,frag]=await Promise.all([resource(upstream+'roms/ts2068-0.rom',true),resource(upstream+'roms/ts2068-1.rom',true),resource('../assets/beast_horizons_rev10.dck',true),resource(upstream+'screen.vert.glsl'),resource(upstream+'screen.frag.glsl')]);
+  const [rom0,rom1,cart,vert,frag]=await Promise.all([resource(upstream+'roms/ts2068-0.rom',true),resource(upstream+'roms/ts2068-1.rom',true),resource('../assets/beast_horizons_rev14.dck',true),resource(upstream+'screen.vert.glsl'),resource(upstream+'screen.frag.glsl')]);
   if(rom0.length!==cpu.homeRomSize||rom1.length!==cpu.exRomSize)throw Error('Unexpected system ROM sizes');
   for(const e of [cpu.setHomeRom(machine,rom0),cpu.setExRom(machine,rom1),cpu.insertDock(machine,cart)])if(e)throw Error(e);
   cpu.resetMachine(machine);

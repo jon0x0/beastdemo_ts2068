@@ -40,7 +40,7 @@ function reference(){
   }
  }
  const sprite=art.sprites[model.pose];
- for(let y=0;y<40;y++)for(let x=0;x<32;x++)if(!sprite.mask[y][x]){rows[120+y][112+x]=sprite.pixels[y][x];attrs[120+y][14+(x>>3)]=sprite.attrs[y][x>>3]}
+ for(let y=0;y<40;y++)for(let x=0;x<32;x++)if(!sprite.mask[y][x]){rows[120+y][104+x]=sprite.pixels[y][x];attrs[120+y][13+(x>>3)]=sprite.attrs[y][x>>3]}
  const out=Buffer.alloc(12288),buffer=Buffer.alloc(3072);
  for(let y=0;y<192;y++)for(let b=0;b<32;b++){
   let v=0;for(let bit=0;bit<8;bit++)v|=rows[y][b*8+bit]<<(7-bit);
@@ -50,7 +50,7 @@ function reference(){
 }
 let entry=false,initialized=false,done=0,started=0,publishing=false,expected,previous;
 const timings=[],animation=[],snapshots=[],gaps=[],hillSteps=[],previewTimes=[];let lastDone=0,bufferChecks=0,displayWrites=0,lastHill=0,transitStart=0,transitEnd=0;
-const stripAddresses=new Set();for(let y=120;y<160;y++)for(let b=14;b<18;b++)for(const p of [0x4000,0x6000])stripAddresses.add(p+offset(y)+b);
+const stripAddresses=new Set();for(let y=120;y<160;y++)for(let b=13;b<17;b++)for(const p of [0x4000,0x6000])stripAddresses.add(p+offset(y)+b);
 const dump=()=>Buffer.concat([Buffer.from(m.ram.slice(0x4000,0x5800)),Buffer.from(m.ram.slice(0x6000,0x7800))]);
 const dumpBuffer=()=>Buffer.concat([Buffer.from(m.ram.slice(0x5800,0x5e00)),Buffer.from(m.ram.slice(0x7800,0x7e00))]);
 function check(){
@@ -65,7 +65,7 @@ m.bus.read=a=>{
  if(a===symbols.START&&m.cpu.pc===a)entry=true;
  if(entry&&a===symbols.READY&&!initialized){expected=reference();previous=check();initialized=true;fs.writeFileSync(path.join(build,'emulator_frame0.bin'),previous);animation.push(previous);previewTimes.push(m.tstates);setKeys(1)}
  if(initialized&&a===symbols.render_frame){started=m.tstates;advance(done+1);expected=reference();publishing=false;displayWrites=0}
- if(initialized&&a===symbols.BUFFER_READY){const actualBuffer=dumpBuffer();for(let y=0;y<40;y++)for(let x=14;x<18;x++)for(const plane of [0,1536]){const j=plane+y*32+x;assert.equal(actualBuffer[j],expected.buffer[j],'Complete character buffer before publish');}for(const addr of stripAddresses)assert.equal(m.ram[addr],previous[(addr>=0x6000?6144:0)+addr-(addr>=0x6000?0x6000:0x4000)],'Old strip stays intact while composing');bufferChecks++;publishing=true}
+ if(initialized&&a===symbols.BUFFER_READY){const actualBuffer=dumpBuffer();for(let y=0;y<40;y++)for(let x=13;x<17;x++)for(const plane of [0,1536]){const j=plane+y*32+x;assert.equal(actualBuffer[j],expected.buffer[j],'Complete character buffer before publish');}for(const addr of stripAddresses)assert.equal(m.ram[addr],previous[(addr>=0x6000?6144:0)+addr-(addr>=0x6000?0x6000:0x4000)],'Old strip stays intact while composing');bufferChecks++;publishing=true}
  if(initialized&&a===symbols.FRAME_DONE){done++;const raw=check();const delta=(m.ram[0x7e0a]-lastHill)&255;assert(delta===0||delta===1,'Rocks never skip a pixel');if(delta)hillSteps.push({update:done,position:m.ram[0x7e0a]});lastHill=m.ram[0x7e0a];assert.equal(displayWrites,done&1?128:320,'Final bitmap and sprite attribute bytes published once');publishing=false;previous=raw;timings.push(m.tstates-started);if(lastDone)gaps.push(m.tstates-lastDone);lastDone=m.tstates;
   if(done===1)transitStart=m.tstates;if(done===257)transitEnd=m.tstates;
   if(done<768){animation.push(raw);previewTimes.push(m.tstates)}

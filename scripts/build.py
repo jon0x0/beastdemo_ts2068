@@ -1,7 +1,8 @@
-"""Build rev10: buffered parallax with the supplied native AY title driver."""
+"""Build rev14: buffered parallax with the supplied native AY title driver."""
 from pathlib import Path
 import hashlib,json,subprocess,sys,struct
 from beast_art import encode
+from align_runner import align_runner
 from music import extract
 ROOT=Path(__file__).resolve().parents[1];BUILD=ROOT/'build';BUILD.mkdir(exist_ok=True)
 rom=bytearray([255])*65536
@@ -22,6 +23,7 @@ def visible(a):return a+0x6000 if 0x4000<=a<0x6000 else a+0x8000 if 0x6000<=a<0x
 def bank(a):return 0x53 if 0x4000<=a<0x8000 else 0xf3
 artpath=BUILD/'beast-art.json'
 art=json.loads(artpath.read_text()) if '--reuse-art' in sys.argv else encode()
+art=align_runner(art)
 artpath.write_text(json.dumps(art,separators=(',',':')))
 assert len(next(b for b in art['bands'] if b['name']=='hill')['phases'])==8
 # Hill descriptors live in always-visible chunk 0; the remaining tables fit
@@ -57,14 +59,14 @@ for band in art['bands']:
         for y in range(y0,y0+height):
             if 120<=y<160:
                 assert fixed[y-y0]
-                lines += [f'ld hl,{0x5800+(y-120)*32+14}','ld (DEST),hl',f'ld de,{screen(y)}','call mixed_fixed_scanline']
+                lines += [f'ld hl,{0x5800+(y-120)*32+13}','ld (DEST),hl',f'ld de,{screen(y)}','call mixed_fixed_scanline']
             else:lines += [f'ld de,{screen(y)}','call '+('fixed_scanline' if fixed[y-y0] else 'color_scanline')]
         lines += ['ret']
     if name=='hill':
         lines += ['draw_hill_upper:']
         for y in range(92,120):lines += [f'ld de,{screen(y)}','call scanline']
         lines += ['ret','draw_hill_buffer:','ld de,84','add ix,de']
-        for y in range(120,152):lines += [f'ld hl,{0x5800+(y-120)*32+14}','ld (DEST),hl',f'ld de,{screen(y)}','call mixed_scanline']
+        for y in range(120,152):lines += [f'ld hl,{0x5800+(y-120)*32+13}','ld (DEST),hl',f'ld de,{screen(y)}','call mixed_scanline']
         lines += ['ret']
 lines += ['sprite_frames:']
 for frame in art['sprites']:
@@ -79,15 +81,15 @@ assert 0x6000<=music_address and music_address+len(music)<=0x8000
 lines += [f'music_source equ {visible(music_address)}',f'music_size equ {len(music)}',f"music_length equ {music_meta['length_ticks']}"]
 lines += ['publish:','ld a,(FRAME)','and 1','jp nz,publish_rocks']
 for y in range(120,160):
-    lines += [f'ld hl,{0x5800+(y-120)*32+14}',f'ld de,{screen(y)+14}','call copy4']
-    lines += [f'ld hl,{0x7800+(y-120)*32+14}',f'ld de,{screen(y)+0x2000+14}','call copy4']
+    lines += [f'ld hl,{0x5800+(y-120)*32+13}',f'ld de,{screen(y)+13}','call copy4']
+    lines += [f'ld hl,{0x7800+(y-120)*32+13}',f'ld de,{screen(y)+0x2000+13}','call copy4']
 lines += ['ret']
 lines += ['row_colors:','db '+','.join(map(str,row_colors))]
 lines += ['publish_rocks:']
 for y in range(120,152):
-    lines += [f'ld hl,{0x5800+(y-120)*32+14}',f'ld de,{screen(y)+14}','call copy4']
+    lines += [f'ld hl,{0x5800+(y-120)*32+13}',f'ld de,{screen(y)+13}','call copy4']
 lines += ['ret']
-lines += ['mixed_patches:','dw '+','.join(str(0x5fd1 if c==0 else 0x5f80+(32-c)*2+(8 if 32-c>=14 else 0)+(8 if 32-c>=18 else 0)) for c in range(32))]
+lines += ['mixed_patches:','dw '+','.join(str(0x5fd1 if c==0 else 0x5f80+(32-c)*2+(8 if 32-c>=13 else 0)+(8 if 32-c>=17 else 0)) for c in range(32))]
 (ROOT/'src/generated.inc').write_text('\n'.join(lines)+'\n')
 cells=[]
 for i in range(4):
@@ -101,11 +103,11 @@ symbols={n:int(v.rstrip('H'),16) for n,_,v in (line.split() for line in (BUILD/'
 assert symbols['mixed_end']-symbols['mixed_image']==81
 assert symbols['isr_end']-symbols['isr_image']==3
 rom[8:11]=b'\xc3'+struct.pack('<H',symbols['mixed_wrap'])
-dck=bytes([0]+[2]*8)+rom;tag='beast_horizons_rev10'
+dck=bytes([0]+[2]*8)+rom;tag='beast_horizons_rev14'
 for ext,data in [('dck',dck),('bin',rom)]:(BUILD/f'{tag}.{ext}').write_bytes(data)
-manifest={'revision':10,'name':'Beast Horizons','tag':tag,'code_bytes':len(code),'asset_bytes':sum(map(len,cache)),
+manifest={'revision':14,'name':'Beast Horizons','tag':tag,'code_bytes':len(code),'asset_bytes':sum(map(len,cache)),
           'music':music_meta,
           'external_table_bytes':1440,'hill_phase_pixels':1,'hill_step_updates':1,
-          'descriptors':[2]*8,'refreshes_per_update':2.5,'max_render_refreshes':3,'scroll_phase_pixels':2,'buffer_y':[120,160],'buffer_x':[112,144],'buffer_stride':32,
+          'descriptors':[2]*8,'refreshes_per_update':2.5,'max_render_refreshes':3,'scroll_phase_pixels':2,'buffer_y':[120,160],'buffer_x':[104,136],'buffer_stride':32,
           'sha256':{ext:hashlib.sha256(data).hexdigest() for ext,data in [('dck',dck),('bin',rom)]}}
 (BUILD/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n');print(json.dumps(manifest,indent=2))

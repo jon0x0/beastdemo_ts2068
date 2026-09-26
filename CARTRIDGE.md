@@ -1,9 +1,9 @@
-# Beast Horizons - TS2068 cartridge demo, revision 10
+# Beast Horizons - TS2068 cartridge demo, revision 14
 
 A Shadow of the Beast scenery and running-character study with David Whittaker's
 AY title music. Five cloud planes, rose-shaded rocks, thin grass bands and a
-foreground fence scroll in 256x192 extended color mode. The scenery and six
-running poses are pixel-identical to revision 08.
+foreground fence scroll in 256x192 extended color mode. The scenery is pixel-identical to revision 08; the six running poses retain
+every visible pixel and are aligned three screen pixels left of revision 10.
 
 The rocks still move one pixel per update, crossing the screen in **10.68 seconds
 in Fuse with music playing**. A 6,000-update run averaged 10.67 seconds per crossing.
@@ -11,7 +11,7 @@ in Fuse with music playing**. A 6,000-update run averaged 10.67 seconds per cros
 ## Run
 
 Select the **Timex Sinclair 2068** machine in Fuse, insert
-`build/beast_horizons_rev10.dck` as the DOCK cartridge, enable sound, then reset.
+`build/beast_horizons_rev14.dck` as the DOCK cartridge, enable sound, then reset.
 The demo starts at medium running speed and plays the title tune automatically.
 
 | Key | Action |
@@ -41,12 +41,12 @@ independently of animation speed. After the file's 5,450-tick duration (about
 including envelope retriggers, are checked against the original driver over
 12,000 ticks and two restarts. Registers R14/R15 are never written.
 
-`build/beast_horizons_rev10_audio.wav` is a 30-second emulator-rendered preview.
+`build/beast_horizons_rev14_audio.wav` is a 30-second emulator-rendered preview.
 The original file and provenance are retained under `references/music/`.
 
 ## Buffered character and performance
 
-The character occupies X=112-143, Y=120-159. Background pixels for those four
+The character occupies X=104-135, Y=120-159. Background pixels for those four
 byte-columns are composed in HOME RAM, then the runner is masked over them.
 Only the completed pixels and attributes are published. Scenery outside the
 character rectangle goes straight to display, avoiding a redundant full-width
@@ -96,7 +96,7 @@ Validation of the shipped cartridge:
 - Music: 12,000 ticks (about four minutes), every AY write compared with the
   unmodified source driver plus the documented restart schedule.
 - Fuse: boot, IM2 interrupts, update 1,024; 1,000 music ticks / 10,996 writes
-  match the reference. A 6,000-update maximum-speed run peaks at 173,475 T-states,
+  match the reference. A 6,000-update maximum-speed run peaks at 172,877 T-states,
   below the 179,208 three-refresh budget, with both tune restarts included.
 - S-key checks cover default-on, press/release, held-key suppression, all three
   muted amplitudes, uninterrupted tune position and muting across a tune restart.
@@ -107,7 +107,17 @@ The GIF is reconstructed from actual display RAM with measured update intervals;
 it has no sound and jumps when looping. The WAV uses TSRun's AY emulation.
 No system ROMs or emulator binaries are included.
 
-Revision 09 was checksum-verified before editing. Earlier revisions remain
-preserved. Revision 10 and its release ZIP include source, music, previews and
+Revision 10 remains preserved for comparison. Earlier revisions remain
+preserved. Revision 14 and its release ZIP include source, music, previews and
 validation evidence; `build/` is working output. Never overwrite a populated
 revision directory.
+
+## Character alignment
+
+Revision 14 shifts the runner three screen pixels left by reusing five transparent
+padding columns inside its unchanged 32x40 buffer. All background bitmap data,
+attributes, sprite colors and visible sprite pixels are unchanged. Across all
+six poses, exposed background pixels to the right of the silhouette in the upper
+32 rows fall from 808 to 466 (42.33%). This is a geometric reduction of right-edge
+color-cell exposure, not elimination of all color clash; some spill shifts left.
+See `build/runner-alignment-comparison.png` and `alignment-validation.json`.

@@ -1,7 +1,7 @@
 {
-  "revision": 10,
+  "revision": 14,
   "name": "Beast Horizons",
-  "tag": "beast_horizons_rev10",
+  "tag": "beast_horizons_rev14",
   "code_bytes": 7760,
   "asset_bytes": 54627,
   "music": {
@@ -47,12 +47,12 @@
     160
   ],
   "buffer_x": [
-    112,
-    144
+    104,
+    136
   ],
   "buffer_stride": 32,
   "sha256": {
-    "dck": "fecc762d6c38476da647f0eccc5b2c1d752b2a81d9d36397e17574b50e796331",
-    "bin": "1e18a2b86ef9b2589bbc6874a5df04ff143fa7183ae9431612b86c6ea4f0b0f1"
+    "dck": "6ebe0879e2afcc132e78c6ebe2eed24a6f7a67cdcff209e180077e5131d80ddd",
+    "bin": "68a679976dc01d3e3d4ee9f4d27507ec95b0535c2fbd646715104033554a5491"
   }
 }
