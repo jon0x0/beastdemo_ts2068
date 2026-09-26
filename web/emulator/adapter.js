@@ -13,6 +13,17 @@ async function boot(){
   for(const e of [cpu.setHomeRom(machine,rom0),cpu.setExRom(machine,rom1),cpu.insertDock(machine,cart)])if(e)throw Error(e);
   cpu.resetMachine(machine);
   let gfx,crtOn=true;
+  const slot=document.getElementById('screen-slot');
+  function resize(){
+    if(!gfx)return;
+    video.resizeScreen(gfx);
+    // TSRun uses integer zoom without CRT. Fullscreen should still use all
+    // available space, preserving the display's 4:3 aspect ratio.
+    if(document.fullscreenElement===slot&&!crtOn){
+      const width=Math.min(slot.clientWidth,slot.clientHeight*4/3);
+      canvas.style.width=width+'px';canvas.style.height=(width*3/4)+'px';
+    }
+  }
   await new Promise((resolve,reject)=>video.initScreen(canvas,{vert,frag},(err,value)=>{if(err||!value){reject(Error(err||'WebGL2 unavailable'));notify('beast-error',err);return;}gfx=value;video.setCrt(gfx,crtOn);resolve();}));
   const sfx=await new Promise((resolve,reject)=>sound.initSound(fps,(err,value)=>err||!value?reject(Error(err||'Web Audio unavailable')):resolve(value)));
   cpu.setSoundRate(machine,sfx.context.sampleRate);sound.setSoundStereo(sfx,false);
@@ -28,11 +39,19 @@ async function boot(){
     start(){started=true;sound.resumeSound(sfx);window.focus();canvas.focus();return true;},
     press(code){this.start();if(timers.has(code))clearTimeout(timers.get(code));const e={code,repeat:false,preventDefault(){}};keys.handleKeyDown(kbd,e);timers.set(code,setTimeout(()=>{keys.handleKeyUp(kbd,e);timers.delete(code);},code==='KeyS'?120:400));},
     reset(){release();sound.resetSound(sfx);cpu.resetMachine(machine);carry=0;last=0;this.start();},
-    crt(on){crtOn=Boolean(on);video.setCrt(gfx,crtOn);},
+    crt(on){crtOn=Boolean(on);video.setCrt(gfx,crtOn);resize();},
+    async fullscreen(){
+      this.start();
+      if(document.fullscreenElement)await document.exitFullscreen();
+      else await slot.requestFullscreen();
+      resize();
+    },
     // Read-only diagnostics for release verification.
     inspect(){return {frames,started,crt:crtOn,audio:sfx.context.state,audioStats:{...sound.soundStats(sfx)},speed:machine.ram[0x7e06],soundOff:machine.ram[0x7e3b],heldKeys:Array.from(matrix)};},
   };
-  window.addEventListener('keydown',e=>{window.beastDemo.start();keys.handleKeyDown(kbd,e);});window.addEventListener('keyup',e=>keys.handleKeyUp(kbd,e));window.addEventListener('blur',release);window.addEventListener('pointerdown',()=>window.beastDemo.start());window.addEventListener('resize',()=>video.resizeScreen(gfx));
+  window.addEventListener('keydown',e=>{window.beastDemo.start();keys.handleKeyDown(kbd,e);});window.addEventListener('keyup',e=>keys.handleKeyUp(kbd,e));window.addEventListener('blur',release);window.addEventListener('pointerdown',()=>window.beastDemo.start());window.addEventListener('resize',resize);
+  document.addEventListener('fullscreenchange',()=>requestAnimationFrame(resize));
+  new ResizeObserver(resize).observe(slot);
   requestAnimationFrame(frame);notify('beast-ready');
 }
 boot().catch(e=>{console.error(e);const message='TSRun could not start. '+e.message;document.getElementById('error').hidden=false;document.getElementById('error').textContent=message;notify('beast-error',message);});

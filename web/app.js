@@ -9,5 +9,5 @@ start.addEventListener('click',()=>{if(!api()?.start())return;panel.hidden=true;
 document.querySelectorAll('[data-key]').forEach(button=>button.addEventListener('click',()=>api()?.press(button.dataset.key)));
 document.getElementById('reset').addEventListener('click',()=>api()?.reset());
 document.getElementById('crt').addEventListener('change',event=>api()?.crt(event.target.checked));
-document.getElementById('fullscreen').addEventListener('click',()=>{frame.requestFullscreen?.().catch(()=>{status.textContent='Full screen unavailable in this browser';});});
+document.getElementById('fullscreen').addEventListener('click',()=>{api()?.fullscreen().catch(()=>{status.textContent='Full screen unavailable in this browser';});});
 setTimeout(()=>{if(start.disabled)error.textContent='The emulator is taking longer than expected. Reload or download the cartridge to use in another emulator.';},30000);
