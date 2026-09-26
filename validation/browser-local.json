@@ -1,0 +1,84 @@
+{
+  "url": "http://127.0.0.1:8765/",
+  "initial": {
+    "frames": 133,
+    "started": true,
+    "crt": true,
+    "audio": "running",
+    "audioStats": {
+      "cut": 6,
+      "gap": 360
+    },
+    "speed": 8,
+    "soundOff": 0,
+    "heldKeys": [
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31
+    ]
+  },
+  "reset": {
+    "frames": 598,
+    "started": true,
+    "crt": true,
+    "audio": "running",
+    "audioStats": {
+      "cut": 6,
+      "gap": 368
+    },
+    "speed": 8,
+    "soundOff": 0,
+    "heldKeys": [
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31
+    ]
+  },
+  "final": {
+    "frames": 1199,
+    "started": true,
+    "crt": true,
+    "audio": "running",
+    "audioStats": {
+      "cut": 6,
+      "gap": 368
+    },
+    "speed": 8,
+    "soundOff": 0,
+    "heldKeys": [
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31
+    ]
+  },
+  "fps": 60.06396162302618,
+  "errors": [],
+  "checks": [
+    "startup",
+    "live upstream modules",
+    "WebGL CRT default and toggle",
+    "audio running",
+    "S button",
+    "held keyboard S",
+    "O/P buttons",
+    "blur release",
+    "restart",
+    "10-second pacing",
+    "mobile layout"
+  ]
+}

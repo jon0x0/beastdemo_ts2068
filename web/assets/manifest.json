@@ -1,0 +1,58 @@
+{
+  "revision": 10,
+  "name": "Beast Horizons",
+  "tag": "beast_horizons_rev10",
+  "code_bytes": 7760,
+  "asset_bytes": 54627,
+  "music": {
+    "source": "David Whittaker - Shadow of the Beast - Title (AY) 1 (1990).ay",
+    "sha256": "6bf35f961ea524fadf5c303abe86d8f3979cbd92bc3cea9f377172ff19dc4ff9",
+    "author": "David Whittaker",
+    "title": "Shadow of the Beast - Title (AY)",
+    "song": 0,
+    "songs": 3,
+    "length_ticks": 5450,
+    "init": 49398,
+    "play": 49155,
+    "load": 49152,
+    "bytes": 4643,
+    "patch_address": 51308,
+    "original_patch": "44ed5945ed79c9",
+    "blocks": [
+      {
+        "address": 49150,
+        "length": 4645,
+        "offset": 265
+      }
+    ]
+  },
+  "external_table_bytes": 1440,
+  "hill_phase_pixels": 1,
+  "hill_step_updates": 1,
+  "descriptors": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "refreshes_per_update": 2.5,
+  "max_render_refreshes": 3,
+  "scroll_phase_pixels": 2,
+  "buffer_y": [
+    120,
+    160
+  ],
+  "buffer_x": [
+    112,
+    144
+  ],
+  "buffer_stride": 32,
+  "sha256": {
+    "dck": "fecc762d6c38476da647f0eccc5b2c1d752b2a81d9d36397e17574b50e796331",
+    "bin": "1e18a2b86ef9b2589bbc6874a5df04ff143fa7183ae9431612b86c6ea4f0b0f1"
+  }
+}
