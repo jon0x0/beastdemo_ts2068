@@ -1,4 +1,4 @@
-# Beast Horizons for the TS2068
+# Beast Demo TS2068
 
 [Play the demo in TSRun](https://jon0x0.github.io/beastdemo_ts2068/).
 
